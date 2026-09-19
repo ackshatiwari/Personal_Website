@@ -1,26 +1,116 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* committed dark palette — a light mode would fight the dusk scene */
+  --background: #0a1e3f;
+  --foreground: #ffffff;
+  --accent: #ffcb47;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  /* matches the zenith, so overscroll doesn't flash white */
+  background: var(--background);
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- The sky ------------------------------------------------------------ */
+/* Four stacked layers. All stops are percentages, so the whole scene stretches
+   to whatever height the page content ends up being. */
+.dusk-sky {
+  background:
+    /* 1. the ground — solid black land with a short, defined falloff at the
+          horizon line */
+    linear-gradient(
+      to top,
+      #000000 0%,
+      #000000 4%,
+      rgba(0, 0, 0, 0.96) 4.8%,
+      rgba(0, 0, 0, 0.62) 6.2%,
+      rgba(0, 0, 0, 0.22) 7.6%,
+      transparent 9%
+    ),
+    /* 2. horizon rim — the lit sliver where the land edge cuts the glow,
+          anchored well left */
+    radial-gradient(
+      ellipse 58% 4% at 22% 95.2%,
+      rgba(255, 182, 102, 0.52) 0%,
+      rgba(255, 142, 62, 0.2) 42%,
+      transparent 76%
+    ),
+    /* 3. horizon bloom — tall, wide ellipse with its centre pushed hard to the
+          left, so the heat clearly originates there and spills right */
+    radial-gradient(
+      ellipse 112% 22% at 24% 98%,
+      rgba(255, 152, 58, 0.66) 0%,
+      rgba(255, 108, 24, 0.36) 28%,
+      rgba(214, 70, 20, 0.15) 50%,
+      transparent 74%
+    ),
+    /* 4. the vertical ramp: black -> ember -> orange -> rose -> violet -> deep
+          blue */
+    linear-gradient(
+      to top,
+      #000000 0%,
+      #000000 3.5%,
+      #0a0502 5%,
+      #1d0b04 7%,
+      #3d1505 9.5%,
+      #642207 12%,
+      #7e2f0c 14.5%,
+      #8a3a18 17%,
+      #7a3a2c 21%,
+      #5f3347 26%,
+      #472f5c 31%,
+      #362d63 37%,
+      #253066 44%,
+      #1b3263 52%,
+      #16345f 62%,
+      #123058 72%,
+      #0f2b4f 82%,
+      #0c2547 91%,
+      #0a1e3f 100%
+    );
+}
+
+/* ---- Stars -------------------------------------------------------------- */
+@keyframes dusk-twinkle {
+  0%,
+  100% {
+    opacity: var(--o);
+  }
+  50% {
+    opacity: calc(var(--o) * 0.28);
+  }
+}
+
+.dusk-twinkle {
+  animation: dusk-twinkle var(--d) ease-in-out var(--delay) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dusk-twinkle {
+    animation: none;
+  }
+}
+
+/* ---- Dither ------------------------------------------------------------- */
+/* Kills the banding that big dark gradients show on 8-bit displays. */
+.dusk-noise {
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
 }
